@@ -1,6 +1,7 @@
 package br.com.zupacademy.gabrielpedrico.mercadolivre.dtos;
 
 import br.com.zupacademy.gabrielpedrico.mercadolivre.models.Usuario;
+import br.com.zupacademy.gabrielpedrico.mercadolivre.validators.Exists;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -14,6 +15,7 @@ public class UsuarioRequest {
 
     @NotBlank
     @Email
+    @Exists(domainClass = Usuario.class, fieldName = "login",message = "Email já cadastrado")
     private String login;
 
     @NotBlank

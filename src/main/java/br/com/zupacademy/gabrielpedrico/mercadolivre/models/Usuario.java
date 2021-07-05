@@ -2,10 +2,7 @@ package br.com.zupacademy.gabrielpedrico.mercadolivre.models;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
@@ -17,6 +14,7 @@ public class Usuario {
     private Long id;
 
     @NotBlank
+    @Column(unique=true)
     private String login;
 
     @NotBlank
