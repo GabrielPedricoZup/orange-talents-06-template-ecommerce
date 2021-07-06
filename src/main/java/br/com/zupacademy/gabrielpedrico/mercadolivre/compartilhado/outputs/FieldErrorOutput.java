@@ -1,5 +1,8 @@
 package br.com.zupacademy.gabrielpedrico.mercadolivre.compartilhado.outputs;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class FieldErrorOutput {
 
     private String field;

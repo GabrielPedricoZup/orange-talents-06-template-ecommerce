@@ -26,9 +26,10 @@ public class UsuarioController {
     @PostMapping(value = "/usuario")
     @Transactional
     public ResponseEntity<?> cadastrar (@RequestBody @Valid UsuarioRequest request){
+
         Usuario usuario = request.conversor(bCryptPasswordEncoder);
         usuarioRepository.save(usuario);
-        return ResponseEntity.ok().body(usuario);
+        return ResponseEntity.ok().build();
     }
 
 }

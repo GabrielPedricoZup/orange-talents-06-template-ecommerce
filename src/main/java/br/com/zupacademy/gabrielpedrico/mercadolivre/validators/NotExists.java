@@ -1,25 +1,23 @@
 package br.com.zupacademy.gabrielpedrico.mercadolivre.validators;
 
-import org.hibernate.validator.constraints.CompositionType;
-import org.hibernate.validator.constraints.ConstraintComposition;
-
-import javax.validation.Constraint;
-import javax.validation.Payload;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(value = { ElementType.FIELD,ElementType.PARAMETER})
+import javax.validation.Constraint;
+import javax.validation.Payload;
+
+@Target(value = { ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ExistsValidator.class)
-public @interface Exists {
+@Constraint(validatedBy = NotExistsValidator.class)
+public @interface NotExists {
 
     Class<?> domainClass();
 
     String fieldName();
 
-    String message() default "Nao existe um objeto informado";
+    String message() default "Nao existe um objeto com o Id informado";
 
     Class<?>[] groups() default { };
 

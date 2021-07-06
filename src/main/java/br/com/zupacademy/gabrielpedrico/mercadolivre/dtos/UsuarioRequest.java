@@ -1,21 +1,18 @@
 package br.com.zupacademy.gabrielpedrico.mercadolivre.dtos;
 
 import br.com.zupacademy.gabrielpedrico.mercadolivre.models.Usuario;
-import br.com.zupacademy.gabrielpedrico.mercadolivre.validators.Exists;
-import org.hibernate.annotations.CreationTimestamp;
+import br.com.zupacademy.gabrielpedrico.mercadolivre.validators.NotExists;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 
 public class UsuarioRequest {
 
     @NotBlank
     @Email
-    @Exists(domainClass = Usuario.class, fieldName = "login",message = "Email já cadastrado")
+    @NotExists(domainClass = Usuario.class, fieldName = "login",message = "Email já cadastrado")
     private String login;
 
     @NotBlank

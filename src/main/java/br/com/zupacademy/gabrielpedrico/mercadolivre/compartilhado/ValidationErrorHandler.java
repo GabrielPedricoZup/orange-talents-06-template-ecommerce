@@ -2,6 +2,7 @@ package br.com.zupacademy.gabrielpedrico.mercadolivre.compartilhado;
 
 import java.util.List;
 
+import br.com.zupacademy.gabrielpedrico.mercadolivre.compartilhado.outputs.FieldErrorOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import br.com.zupacademy.gabrielpedrico.mercadolivre.compartilhado.outputs.ValidationErrorsOutput;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
 public class ValidationErrorHandler {
@@ -31,6 +33,14 @@ public class ValidationErrorHandler {
 
         return buildValidationErrors(globalErrors, fieldErrors);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public FieldErrorOutput handleValidationError(IllegalArgumentException exception) {
+
+       return new FieldErrorOutput(null, exception.getMessage());
+
+    }
+
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)
