@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import br.com.zupacademy.gabrielpedrico.mercadolivre.compartilhado.outputs.ValidationErrorsOutput;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
@@ -38,6 +39,13 @@ public class ValidationErrorHandler {
     public FieldErrorOutput handleValidationError(IllegalArgumentException exception) {
 
        return new FieldErrorOutput(null, exception.getMessage());
+
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public FieldErrorOutput handleValidationError(ResponseStatusException exception) {
+
+        return new FieldErrorOutput("produto", "Esse produto não pertence a você ou não existe");
 
     }
 

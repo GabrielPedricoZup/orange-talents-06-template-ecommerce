@@ -1,5 +1,7 @@
 package br.com.zupacademy.gabrielpedrico.mercadolivre.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -15,6 +17,7 @@ public class Caracteristica {
     private String descricao;
 
     @ManyToOne
+    @JsonIgnore
     private Produto produto;
 
     public Caracteristica(String nome, String descricao, Produto produto) {

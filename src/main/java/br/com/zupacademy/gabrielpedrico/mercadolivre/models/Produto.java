@@ -2,15 +2,13 @@ package br.com.zupacademy.gabrielpedrico.mercadolivre.models;
 
 import br.com.zupacademy.gabrielpedrico.mercadolivre.dtos.CaracteristicaRequest;
 import br.com.zupacademy.gabrielpedrico.mercadolivre.validators.Exists;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -40,6 +38,9 @@ public class Produto {
 
     @OneToMany(mappedBy = "produto", cascade = CascadeType.PERSIST)
     private Set<Caracteristica> caracteristicas = new HashSet<>();
+
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.MERGE)
+    private Set<ImagemProduto> imagens = new HashSet<>();
 
     public Produto(String nome, Integer quantidade, String descricao, BigDecimal valor, Categoria categoria, Usuario usuario, Collection<CaracteristicaRequest> caracteristicas ) {
         this.nome = nome;
@@ -87,5 +88,52 @@ public class Produto {
 
     public Set<Caracteristica> getCaracteristicas() {
         return caracteristicas;
+    }
+
+    public void associaImagens(Set<String> links) {
+        Set<ImagemProduto> imagens = links.stream()
+                .map(link -> new ImagemProduto(this,link))
+                .collect(Collectors.toSet());
+
+        this.imagens.addAll(imagens);
+    }
+
+    @Override
+    public String toString() {
+        return "Produto{" +
+                "Id=" + Id +
+                ", nome='" + nome + '\'' +
+                ", quantidade=" + quantidade +
+                ", descricao='" + descricao + '\'' +
+                ", valor=" + valor +
+                ", categoria=" + categoria +
+                ", donoProduto=" + donoProduto +
+                ", caracteristicas=" + caracteristicas +
+                ", imagens=" + imagens +
+                '}';
+    }
+
+    public boolean pertenceAoUsuario(Usuario usuario) {
+        if(usuario.getId() == donoProduto.getId()){
+            return true;
+        }
+        return false;
+    }
+
+    public Set<ImagemProduto> getImagens() {
+        return imagens;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Produto produto = (Produto) o;
+        return Id.equals(produto.Id) && donoProduto.equals(produto.donoProduto);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(Id, donoProduto);
     }
 }
