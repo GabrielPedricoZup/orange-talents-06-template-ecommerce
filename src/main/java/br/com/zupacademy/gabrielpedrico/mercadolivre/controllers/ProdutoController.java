@@ -44,7 +44,7 @@ public class ProdutoController {
 
     @PutMapping(value = "/produto/{id}/imagens")
     @Transactional
-    public ResponseEntity<?> adicionaImagens(@PathVariable("id") Long id, @Valid ImagensRequest request, @AuthenticationPrincipal Usuario usuario) {
+    public ResponseEntity<?> adicionaImagens(@PathVariable("id") Long id,@RequestBody @Valid ImagensRequest request, @AuthenticationPrincipal Usuario usuario) {
 /*  [1] --> Enviar imagens para o local onde vão ficar.
     [2] --> Pegar o link de todas as imagens.
     [3] --> Associar com o produto em questão.
