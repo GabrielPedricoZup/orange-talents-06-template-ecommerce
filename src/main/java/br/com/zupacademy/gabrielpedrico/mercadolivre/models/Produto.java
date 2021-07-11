@@ -148,4 +148,8 @@ public class Produto {
         return new ProdutoResponse(this.nome,this.quantidade,this.descricao,this.valor,donoProduto,categoria,this.caracteristicas,this.imagens,opinioes);
     }
 
+    public void movimentaEstoque(Integer quantidade){
+        this.quantidade -= quantidade;
+    }
+
 }
