@@ -2,9 +2,11 @@ package br.com.zupacademy.gabrielpedrico.mercadolivre.controllers;
 
 import br.com.zupacademy.gabrielpedrico.mercadolivre.dtos.ImagensRequest;
 import br.com.zupacademy.gabrielpedrico.mercadolivre.dtos.ProdutoRequest;
+import br.com.zupacademy.gabrielpedrico.mercadolivre.dtos.ProdutoResponse;
 import br.com.zupacademy.gabrielpedrico.mercadolivre.models.Produto;
 import br.com.zupacademy.gabrielpedrico.mercadolivre.models.Usuario;
 import br.com.zupacademy.gabrielpedrico.mercadolivre.repositories.CategoriaRepository;
+import br.com.zupacademy.gabrielpedrico.mercadolivre.repositories.OpiniaoRepository;
 import br.com.zupacademy.gabrielpedrico.mercadolivre.repositories.ProdutoRepository;
 import br.com.zupacademy.gabrielpedrico.mercadolivre.tools.UploaderFake;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,9 @@ public class ProdutoController {
 
     @Autowired
     private UploaderFake uploaderFake;
+
+    @Autowired
+    private OpiniaoRepository opiniaoRepository;
 
     @PostMapping(value = "/produto")
     @Transactional
@@ -60,5 +65,17 @@ public class ProdutoController {
         produtoRepository.saveAndFlush(produto.get());
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "/produto/{id}")
+    public ResponseEntity<?> detalharProduto(@PathVariable("id") Long id) {
+
+        Optional<Produto> possivelProduto = produtoRepository.findById(id);
+        if (possivelProduto.isPresent()){
+            Produto produto = possivelProduto.get();
+            ProdutoResponse response = produto.conversor(opiniaoRepository);
+            return ResponseEntity.ok(response);
+        }
+        return ResponseEntity.notFound().build();
     }
 }

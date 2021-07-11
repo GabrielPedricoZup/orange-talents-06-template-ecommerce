@@ -55,13 +55,13 @@ public class Opiniao {
         return descricao;
     }
 
-    public Produto getProduto() {
+/*    public Produto getProduto() {
         return produto;
     }
 
     public Usuario getUsuario() {
         return usuario;
-    }
+    }*/
 
     public Integer getNota() {
         return nota;

@@ -1,6 +1,8 @@
 package br.com.zupacademy.gabrielpedrico.mercadolivre.models;
 
 import br.com.zupacademy.gabrielpedrico.mercadolivre.dtos.CaracteristicaRequest;
+import br.com.zupacademy.gabrielpedrico.mercadolivre.dtos.ProdutoResponse;
+import br.com.zupacademy.gabrielpedrico.mercadolivre.repositories.OpiniaoRepository;
 import br.com.zupacademy.gabrielpedrico.mercadolivre.validators.Exists;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.Length;
@@ -8,6 +10,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -24,7 +27,7 @@ public class Produto {
 
     private Integer quantidade;
 
-    @Column(nullable = false,length = 1000)
+    @Column(nullable = false, length = 1000)
     private String descricao;
 
     @Column(nullable = false)
@@ -42,7 +45,7 @@ public class Produto {
     @OneToMany(mappedBy = "produto", cascade = CascadeType.MERGE)
     private Set<ImagemProduto> imagens = new HashSet<>();
 
-    public Produto(String nome, Integer quantidade, String descricao, BigDecimal valor, Categoria categoria, Usuario usuario, Collection<CaracteristicaRequest> caracteristicas ) {
+    public Produto(String nome, Integer quantidade, String descricao, BigDecimal valor, Categoria categoria, Usuario usuario, Collection<CaracteristicaRequest> caracteristicas) {
         this.nome = nome;
         this.quantidade = quantidade;
         this.descricao = descricao;
@@ -92,7 +95,7 @@ public class Produto {
 
     public void associaImagens(Set<String> links) {
         Set<ImagemProduto> imagens = links.stream()
-                .map(link -> new ImagemProduto(this,link))
+                .map(link -> new ImagemProduto(this, link))
                 .collect(Collectors.toSet());
 
         this.imagens.addAll(imagens);
@@ -114,7 +117,7 @@ public class Produto {
     }
 
     public boolean pertenceAoUsuario(Usuario usuario) {
-        if(usuario.getId() == donoProduto.getId()){
+        if (usuario.getId() == donoProduto.getId()) {
             return true;
         }
         return false;
@@ -136,4 +139,13 @@ public class Produto {
     public int hashCode() {
         return Objects.hash(Id, donoProduto);
     }
+
+    public ProdutoResponse conversor(OpiniaoRepository opiniaoRepository){
+
+        String donoProduto = this.donoProduto.getLogin();
+        String categoria = this.categoria.getNome();
+        List<Opiniao> opinioes = opiniaoRepository.findAllByProduto(this);
+        return new ProdutoResponse(this.nome,this.quantidade,this.descricao,this.valor,donoProduto,categoria,this.caracteristicas,this.imagens,opinioes);
+    }
+
 }
