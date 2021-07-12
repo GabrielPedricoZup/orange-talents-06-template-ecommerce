@@ -14,6 +14,12 @@ public class FakeEmailSender {
    :::::::::::::@return link para mandar o email para o dono::::
    :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
         String link ="https://bucket.io/"+ emailDono + "/novaPergunta";
-        System.out.println(link);
     }
+    public static void enviaCompra(String emailDono) {
+/* :::::::::::::@param email do dono produto::::::::::::::::::::::::::::::::::::
+   :::::::::::::@return link para mandar o email para o dono::::
+   :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+        String link ="https://bucket.io/"+ emailDono + "/novaCompra";
+    }
+
 }

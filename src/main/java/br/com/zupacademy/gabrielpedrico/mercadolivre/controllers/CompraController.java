@@ -7,6 +7,7 @@ import br.com.zupacademy.gabrielpedrico.mercadolivre.models.Produto;
 import br.com.zupacademy.gabrielpedrico.mercadolivre.models.Usuario;
 import br.com.zupacademy.gabrielpedrico.mercadolivre.repositories.CompraRepository;
 import br.com.zupacademy.gabrielpedrico.mercadolivre.repositories.ProdutoRepository;
+import br.com.zupacademy.gabrielpedrico.mercadolivre.tools.FakeEmailSender;
 import br.com.zupacademy.gabrielpedrico.mercadolivre.tools.FakePaymentGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,10 +35,11 @@ public class CompraController {
 
         Compra compra = request.conversor(usuario,produtoRepository);
         String linkCompra = FakePaymentGateway.envia(compra.getToken(),compra.getTipoPagamento());
-        compraRepository.save(compra);
         Produto produto = produtoRepository.findByNome(request.getProduto());
         produto.movimentaEstoque(request.getQuantidade());
+        FakeEmailSender.enviaCompra(produto.getDonoProduto().getLogin());
         produtoRepository.save(produto);
+        compraRepository.save(compra);
         CompraResponse response = compra.conversor(linkCompra,produtoRepository,usuario);
         return ResponseEntity.status(302).body(response);
     }
