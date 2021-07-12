@@ -2,6 +2,10 @@ package br.com.zupacademy.gabrielpedrico.mercadolivre.models;
 
 import br.com.zupacademy.gabrielpedrico.mercadolivre.dtos.CompraResponse;
 import br.com.zupacademy.gabrielpedrico.mercadolivre.repositories.ProdutoRepository;
+import br.com.zupacademy.gabrielpedrico.mercadolivre.repositories.TransacaoRepository;
+import br.com.zupacademy.gabrielpedrico.mercadolivre.tools.FakeEmailSender;
+import br.com.zupacademy.gabrielpedrico.mercadolivre.tools.FakeNF;
+import br.com.zupacademy.gabrielpedrico.mercadolivre.tools.FakeRanking;
 import br.com.zupacademy.gabrielpedrico.mercadolivre.tools.StatusPagamento;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
@@ -27,7 +31,7 @@ public class Compra {
     @NotBlank
     private String tipoPagamento;
     @NotNull
-    private StatusPagamento status = StatusPagamento.NAO_PAGO;
+    private StatusPagamento status = StatusPagamento.ERRO;
 
     public Compra(Produto produto, Usuario comprador,String tipoPagamento) {
         this.produto = produto;
@@ -69,15 +73,34 @@ public class Compra {
         return status;
     }
 
-    public CompraResponse conversor(String linkCompra, ProdutoRepository produtoRepository,Usuario usuario) {
+    public CompraResponse conversor(String linkCompra,Usuario usuario, String response, TransacaoRepository transacaoRepository) {
         String produto = this.produto.getNome();
         BigDecimal valorProduto = this.produto.getValor();
         String comprador = usuario.getLogin();
-        pagamentoAprovado();
-        return new CompraResponse(produto,linkCompra,this.status,valorProduto,comprador);
+        Boolean transacaoAprovada = pagamentoAprovado(response);
+        if(transacaoAprovada) {
+            Transacao transacao = new Transacao(this,this.status);
+            transacaoRepository.save(transacao);
+            FakeEmailSender.enviaCompra(this.produto.getDonoProduto().getLogin(),true);
+            FakeNF.envia(this.token,usuario.getId());
+            FakeRanking.envia(this.token,this.produto.getDonoProduto().getId());
+            return new CompraResponse(produto, linkCompra, this.status, valorProduto, comprador);
+        }
+        Transacao transacao = new Transacao(this,this.status);
+        transacaoRepository.save(transacao);
+        FakeEmailSender.enviaCompra(this.produto.getDonoProduto().getLogin(),false);
+        throw new IllegalArgumentException("Transação não aprovada");
     }
 
-    private void pagamentoAprovado(){
-        this.status = StatusPagamento.PAGO;
+    private boolean pagamentoAprovado(String response){
+        if(response.contentEquals("SUCESSO")) {
+            this.status = StatusPagamento.SUCESSO;
+            return true;
+        }
+        if(response.contentEquals("1")){
+            this.status = StatusPagamento.SUCESSO;
+            return true;
+        }
+        return false;
     }
 }
